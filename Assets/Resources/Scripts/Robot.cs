@@ -109,12 +109,12 @@ public class Robot : MonoBehaviour {
         {
             // end of recursion.
             FullSearchEnd(calclist);
+            calclist.Clear();
         }
         else
         {
             Ball b = TurnManager.BallList[ballid];
-            Debug.Log("time: " + time);
-            Vector3 bpos = b.nextPosition + (time * (float)b.velocity);
+            Vector3 bpos = b.nextPosition + (time * b.velocity);
             float usedtime = 0.0f;
             bool cancatch = false;
 
@@ -184,7 +184,7 @@ public class Robot : MonoBehaviour {
                         break;
                     case 1:
                         usedtime = TurnManager.YRange * (Mathf.Sqrt(2));
-                        bpos = bpos + (usedtime * (float)b.velocity);
+                        bpos = bpos + (usedtime * b.velocity);
                         if (bpos.y > rpos.y)
                         {
                             rpos = rpos + ((Vector3.right + Vector3.up) * TurnManager.YRange);
@@ -196,7 +196,7 @@ public class Robot : MonoBehaviour {
                         break;
                     case 2:
                         usedtime = TurnManager.YRange;
-                        bpos = bpos + (usedtime * (float)b.velocity);
+                        bpos = bpos + (usedtime * b.velocity);
                         if (bpos.y > rpos.y)
                         {
                             rpos = rpos + (Vector3.up * TurnManager.YRange);
@@ -208,7 +208,7 @@ public class Robot : MonoBehaviour {
                         break;
                     case 3:
                         usedtime = TurnManager.YRange * (Mathf.Sqrt(2));
-                        bpos = bpos + (usedtime * (float)b.velocity);
+                        bpos = bpos + (usedtime * b.velocity);
                         if (bpos.y > rpos.y)
                         {
                             rpos = rpos + ((Vector3.left + Vector3.up) * TurnManager.YRange);
@@ -223,12 +223,12 @@ public class Robot : MonoBehaviour {
                 }
                 usedtime = usedtime + (Mathf.Abs(rpos.x - bpos.x) / 2);
                 time = time + usedtime;// need
-                bpos = bpos + ((float)b.velocity * (Mathf.Abs(rpos.x - bpos.x) / 2));
+                bpos = bpos + (b.velocity * (Mathf.Abs(rpos.x - bpos.x) / 2));
                 rpos = bpos;// need
 
                 calclist[0].Add(b.identification);
                 calclist[1].Add(dir);
-                calclist[2].Add(usedtime);
+                calclist[2].Add(time);
                 calclist[3].Add(rpos.x);
                 calclist[4].Add(rpos.y);
 
@@ -246,6 +246,7 @@ public class Robot : MonoBehaviour {
             {
                 // end of recursion.
                 FullSearchEnd(calclist);
+                calclist.Clear();
             }
         }
 
@@ -261,6 +262,11 @@ public class Robot : MonoBehaviour {
             CatchOrder.Add(calclist[2]);
             CatchOrder.Add(calclist[3]);
             CatchOrder.Add(calclist[4]);
+            Debug.Log("time: ");
+            for (int i = 0; i < CatchOrder[2].Count; i++)
+            {
+                Debug.Log(CatchOrder[2][i]);
+            }
         }
     }
 
