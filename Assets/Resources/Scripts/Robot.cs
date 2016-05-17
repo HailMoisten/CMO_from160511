@@ -109,7 +109,6 @@ public class Robot : MonoBehaviour {
         {
             // end of recursion.
             FullSearchEnd(calclist);
-            calclist.Clear();
         }
         else
         {
@@ -246,7 +245,6 @@ public class Robot : MonoBehaviour {
             {
                 // end of recursion.
                 FullSearchEnd(calclist);
-                calclist.Clear();
             }
         }
 
