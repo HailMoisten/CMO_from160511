@@ -69,7 +69,8 @@ public class Robot : MonoBehaviour {
 
     private void FullSearch()
     {
-        List<List<float>> resultlist = new List<List<float>>();
+        // Recursion version
+/*        List<List<float>> resultlist = new List<List<float>>();
      
         for (int i = 0; i < TurnManager.BallList.Count; i++)
         {
@@ -78,17 +79,115 @@ public class Robot : MonoBehaviour {
                 FullSearchByRecursion(transform.position, i, 0.0f, d, new List<List<float>>());
             }
         }
-/*
-        for (int i = 0; i < TurnManager.BallList.Count; i++)
-        {
-            for (int d = 0; d < 4; d++)
-            {
-                resultlist = FullSearchEnd(FullSearchPart(transform.position, i, 0.0f, d, new List<List<float>>()));
-            }
-        }
 */
+        // Iteration version
+        int n = TurnManager.BallList.Count;
+        int[] dirArray = new int[n];
+        int[] ballArray = new int[n];
+
+
+        for (int i = 0; i < n; i++)
+        {
+            dirArray[n - 1]++;
+            dirArray = carryCheck(dirArray, n, 4, 0);
+        }
+        ballArray[n - 1]++;
+        ballArray = carryCheck(ballArray, n, n, 0);
 
     }
+
+    private int[] carryCheck(int[] target, int size, int upper, int pointa)
+    {
+        if (target[size - 1 - pointa] == upper)
+        {
+            target[size - 1 - pointa] == 0;
+            pointa++;
+            target[size - 1 - pointa]++;
+            return carryCheck(target, size, upper, pointa);
+        }
+        else
+        {
+            return target;
+        }
+    }
+
+    private bool canCatch(Vector3 rpos, int ballid, float time, int dir)
+    {
+        Ball b = TurnManager.BallList[ballid];
+        Vector3 bpos = b.nextPosition + (time * b.velocity);
+        float usedtime = 0.0f;
+        bool cancatch = false;
+
+        switch (dir)
+        {
+            case 0:
+                if (rpos.y == bpos.y)
+                {
+                    if (b.velocity.x > 0 && (rpos.x - bpos.x) >= 0)
+                    {
+                        cancatch = true;
+                    }
+                    else if (b.velocity.x < 0 && (rpos.x - bpos.x) <= 0)
+                    {
+                        cancatch = true;
+                    }
+                }
+                break;
+            case 1:
+                if (rpos.y != bpos.y)
+                {
+                    if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) - 1))
+                    {
+                        cancatch = true;
+                    }
+                    else if (b.velocity.x < 0 && rpos.x - bpos.x <= -1 * TurnManager.YRange * (Mathf.Sqrt(2) + 1))
+                    {
+                        cancatch = true;
+                    }
+                }
+                break;
+            case 2:
+                if (rpos.y != bpos.y)
+                {
+                    if (b.velocity.x > 0 && (rpos.x - bpos.x) >= TurnManager.YRange * 1)
+                    {
+                        cancatch = true;
+                    }
+                    else if (b.velocity.x < 0 && (rpos.x - bpos.x) <= TurnManager.YRange * 1)
+                    {
+                        cancatch = true;
+                    }
+                }
+                break;
+            case 3:
+                if (rpos.y != bpos.y)
+                {
+                    if (b.velocity.x < 0 && bpos.x - rpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) - 1))
+                    {
+                        cancatch = true;
+                    }
+                    else if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) + 1))
+                    {
+                        cancatch = true;
+                    }
+                }
+                break;
+            default :
+                break;
+        }
+
+        if (cancatch)
+        {
+        }
+        else
+        {
+            // end of recursion.
+        }
+
+        return cancatch;
+
+    }
+
     /// <summary>
     /// Fulls the search part.
     /// dir:
@@ -100,7 +199,7 @@ public class Robot : MonoBehaviour {
     /// <param name="time">Time.</param>
     /// <param name="dir">Dir.</param>
     /// <param name="calclist">Calclist.</param>
-    private List<List<float>> FullSearchPart(Vector3 rpos, int ballid, float time, int dir, List<List<float>> calclist)
+    private List<List<float>> FullSearchCalc(Vector3 rpos, int ballid, float time, int dir, List<List<float>> calclist)
     {
         if (calclist.Count == 0)
         {
@@ -118,71 +217,6 @@ public class Robot : MonoBehaviour {
         }
         else
         {
-            Ball b = TurnManager.BallList[ballid];
-            Vector3 bpos = b.nextPosition + (time * b.velocity);
-            float usedtime = 0.0f;
-            bool cancatch = false;
-
-            switch (dir)
-            {
-                case 0:
-                    if (rpos.y == bpos.y)
-                    {
-                        if (b.velocity.x > 0 && (rpos.x - bpos.x) >= 0)
-                        {
-                            cancatch = true;
-                        }
-                        else if (b.velocity.x < 0 && (rpos.x - bpos.x) <= 0)
-                        {
-                            cancatch = true;
-                        }
-                    }
-                    break;
-                case 1:
-                    if (rpos.y != bpos.y)
-                    {
-                        if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) - 1))
-                        {
-                            cancatch = true;
-                        }
-                        else if (b.velocity.x < 0 && rpos.x - bpos.x <= -1 * TurnManager.YRange * (Mathf.Sqrt(2) + 1))
-                        {
-                            cancatch = true;
-                        }
-                    }
-                    break;
-                case 2:
-                    if (rpos.y != bpos.y)
-                    {
-                        if (b.velocity.x > 0 && (rpos.x - bpos.x) >= TurnManager.YRange * 1)
-                        {
-                            cancatch = true;
-                        }
-                        else if (b.velocity.x < 0 && (rpos.x - bpos.x) <= TurnManager.YRange * 1)
-                        {
-                            cancatch = true;
-                        }
-                    }
-                    break;
-                case 3:
-                    if (rpos.y != bpos.y)
-                    {
-                        if (b.velocity.x < 0 && bpos.x - rpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) - 1))
-                        {
-                            cancatch = true;
-                        }
-                        else if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) + 1))
-                        {
-                            cancatch = true;
-                        }
-                    }
-                    break;
-                default :
-                    break;
-            }
-
-            if (cancatch)
-            {
                 switch (dir)
                 {
                     case 0: 
@@ -238,13 +272,6 @@ public class Robot : MonoBehaviour {
                 calclist[4].Add(rpos.y);
 
                 return calclist;
-
-            }
-            else
-            {
-                // end of recursion.
-                return FullSearchEnd(calclist);
-            }
         }
 
     }
