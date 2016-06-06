@@ -74,11 +74,11 @@ public class Robot : MonoBehaviour {
         Initialize();
         FullSearch();
         Debug.Log("Count: " + SolutionList[0].Count);
-//        Debug.Log("order id");
-//        for (int i = 0; i < CatchOrder[0].Count; i++)
-//        {
-//            Debug.Log(CatchOrder[0][i]);
-//        }
+        Debug.Log("order id");
+        for (int i = 0; i < SolutionList[0].Count; i++)
+        {
+            Debug.Log(SolutionList[0][i]);
+        }
         Debug.Log("each time");
         for (int i = 0; i < SolutionList[2].Count; i++)
         {
@@ -130,13 +130,13 @@ public class Robot : MonoBehaviour {
 
                 FullSearchList = InitializeTwoDList(FullSearchList);
                 endflag = false;
-                dirArray[n - 1]++;
+                dirArray[0]++;
                 dirArray = carryCheck(dirArray, n, 4, 0);
             }
             dirArray = ClearArray(dirArray);
             // Direction loop end.
 
-            ballArray[n - 1]++;
+            ballArray[0]++;
             ballArray = carryCheck(ballArray, n, n, 0);
         }
         // Order loop end.
@@ -145,11 +145,11 @@ public class Robot : MonoBehaviour {
 
     private int[] carryCheck(int[] array, int size, int upper, int pointa)
     {
-        if (array[size - 1 - pointa] >= upper)
+        if (array[pointa] >= upper)
         {
-            array[size - 1 - pointa] -= upper;
+            array[pointa] -= upper;
             pointa++;
-            array[size - 1 - pointa]++;
+            array[pointa]++;
             return carryCheck(array, size, upper, pointa);
         }
         else
