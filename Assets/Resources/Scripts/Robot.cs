@@ -92,9 +92,6 @@ public class Robot : MonoBehaviour {
         int[] dirArray = new int[n];
         int[] ballArray = new int[n];
 
-        bool test = canCatch(new Vector3(FullSearchList[3][0], FullSearchList[4][0], 0), ballArray[0], FullSearchList[2][0], dirArray[0]);
-        Debug.Log("testflag:" + test);
-
         bool endflag = false;
 
         // Calculate all order.
@@ -117,32 +114,22 @@ public class Robot : MonoBehaviour {
                         {
                             if (canCatch(new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0), ballArray[i], FullSearchList[2][i], dirArray[i]))
                             {
-                                List<float> catchedlist = catchCalc(
+                                FullSearchList = catchCalc(
                                     new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0),
                                     ballArray[i],
                                     FullSearchList[2][i],
-                                    dirArray[i]);
-                                Debug.Log(catchedlist[0]);
-                                Debug.Log(catchedlist[1]);
-                                Debug.Log(catchedlist[2]);
-                                Debug.Log(catchedlist[3]);
-                                Debug.Log(catchedlist[4]);
-
-                                FullSearchList[0].Add(catchedlist[0]);
-                                FullSearchList[1].Add(catchedlist[1]);
-                                FullSearchList[2].Add(catchedlist[2]);
-                                FullSearchList[3].Add(catchedlist[3]);
-                                FullSearchList[4].Add(catchedlist[4]);
+                                    dirArray[i],
+                                    FullSearchList);
                             }
                             else { endflag = true; }
                         }
                     }
                 }
                 RouteEnd(FullSearchList);
-                FullSearchList = InitializeTwoDList(FullSearchList);
-                endflag = false;
                 // One search loop end.
 
+                FullSearchList = InitializeTwoDList(FullSearchList);
+                endflag = false;
                 dirArray[n - 1]++;
                 dirArray = carryCheck(dirArray, n, 4, 0);
             }
@@ -250,7 +237,7 @@ public class Robot : MonoBehaviour {
     /// <param name="time">Time.</param>
     /// <param name="dir">Dir.</param>
     /// <param name="calclist">Calclist.</param>
-    private List<float> catchCalc(Vector3 rpos, int ballid, float time, int dir)
+    private List<List<float>> catchCalc(Vector3 rpos, int ballid, float time, int dir, List<List<float>> calclist)
     {
         Ball b = TurnManager.BallList[ballid];
         Vector3 bpos = b.nextPosition + (time * b.velocity);
@@ -304,12 +291,11 @@ public class Robot : MonoBehaviour {
         bpos = bpos + (b.velocity * (Mathf.Abs(rpos.x - bpos.x) / 2));
         rpos = bpos;// need
 
-        List<float> calclist = new List<float>();
-        calclist.Add(b.identification);
-        calclist.Add(dir);
-        calclist.Add(time);
-        calclist.Add(rpos.x);
-        calclist.Add(rpos.y);
+        calclist[0].Add(b.identification);
+        calclist[1].Add(dir);
+        calclist[2].Add(time);
+        calclist[3].Add(rpos.x);
+        calclist[4].Add(rpos.y);
 
         return calclist;
     }
