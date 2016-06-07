@@ -76,11 +76,11 @@ public class TurnManager : MonoBehaviour {
     {
         if (turn == 0) { turn++; }
 
-        if (turn >= RobotA.getCount()) { }
+        if (turn >= RobotA.GetCount()) { }
         else
         {
-            float[] ab = RobotA.getNextMoveTime(turn);
-            StartCoroutine(RobotA.Move(RobotA.getNextRPos(turn), ab[0], ab[1], RobotA.getNextDir(turn)));
+            float[] ab = RobotA.GetNextMoveTime(turn);
+            StartCoroutine(RobotA.Move(RobotA.GetNextRPos(turn), ab[0], ab[1], RobotA.GetNextDir(turn)));
 
             for (int i = 0; i < BallList.Count; i++)
             {

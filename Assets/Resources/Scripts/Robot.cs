@@ -87,22 +87,22 @@ public class Robot : MonoBehaviour
 
     }
 
-    public float[] getNextMoveTime(int i)
+    public float[] GetNextMoveTime(int i)
     {
         float[] ab = new float[2];
         if (i == 0) { ab[0] = SolutionList[2][i]; }
         else { ab[0] = SolutionList[2][i] - SolutionList[2][i - 1]; }
         return ab;
     }
-    public float getNextDir(int i)
+    public float GetNextDir(int i)
     {
         return SolutionList[1][i];
     }
-    public Vector3 getNextRPos(int i)
+    public Vector3 GetNextRPos(int i)
     {
         return new Vector3(SolutionList[3][i], SolutionList[4][i], 0);
     }
-    public int getCount()
+    public int GetCount()
     {
         return SolutionList[0].Count;
     }
@@ -130,49 +130,12 @@ public class Robot : MonoBehaviour
         int[] dirArray = new int[n + 1];
         int[] ballArray = new int[n + 1];
 
-        bool endflag = false;
+        int orderb = (int)Mathf.Pow(n, n);
 
         // Calculate all order.
-        for (int k = 0; k < Mathf.Pow(n, n); k++)
+        for (int k = 0; k < orderb; k++)
         {
-            // Calculate all direction.
-            for (int j = 0; j < Mathf.Pow(4, n); j++)
-            {
-                // One search loop.
-                for (int i = 0; i < n; i++)
-                {
-                    if (endflag) { }
-                    else
-                    {
-                        if (FullSearchList[0].Contains(ballArray[i]))
-                        {
-                            endflag = true;
-                        }
-                        else
-                        {
-                            if (canCatch(new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0), ballArray[i], FullSearchList[2][i], dirArray[i]))
-                            {
-                                FullSearchList = catchCalc(
-                                    new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0),
-                                    ballArray[i],
-                                    FullSearchList[2][i],
-                                    dirArray[i],
-                                    FullSearchList);
-                            }
-                            else { endflag = true; }
-                        }
-                    }
-                }
-                RouteEnd(FullSearchList);
-                // One search loop end.
-
-                FullSearchList = InitializeTwoDList(FullSearchList);
-                endflag = false;
-                dirArray[0]++;
-                dirArray = carryCheck(dirArray, n, 4, 0);
-            }
-            dirArray = ClearArray(dirArray);
-            // Direction loop end.
+            directionSearch(n, ballArray, dirArray);
 
             //if (Mathf.RoundToInt((k / Mathf.Pow(n, n)) * 100)%10 == 0)
             //{
@@ -183,6 +146,55 @@ public class Robot : MonoBehaviour
         }
         // Order loop end.
 
+    }
+    private void directionSearch(int n, int[] barray, int[] darray)
+    {
+        int orderd = (int)Mathf.Pow(4, n);
+
+        // Calculate all direction.
+        for (int j = 0; j < orderd; j++)
+        {
+            singleSearch(n, barray, darray);
+
+            FullSearchList = InitializeTwoDList(FullSearchList);
+            darray[0]++;
+            darray = carryCheck(darray, n, 4, 0);
+        }
+        darray = ClearArray(darray);
+        // Direction loop end.
+
+    }
+    private void singleSearch(int n, int[] barray, int[] darray)
+    {
+        bool endflag = false;
+
+        // One search loop.
+        for (int i = 0; i < n; i++)
+        {
+            if (endflag) { }
+            else
+            {
+                if (FullSearchList[0].Contains(barray[i]))
+                {
+                    endflag = true;
+                }
+                else
+                {
+                    if (canCatch(new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0), barray[i], FullSearchList[2][i], darray[i]))
+                    {
+                        FullSearchList = catchCalc(
+                            new Vector3(FullSearchList[3][i], FullSearchList[4][i], 0),
+                            barray[i],
+                            FullSearchList[2][i],
+                            darray[i],
+                            FullSearchList);
+                    }
+                    else { endflag = true; }
+                }
+            }
+        }
+        RouteEnd(FullSearchList);
+        // One search loop end.
     }
 
     private int[] carryCheck(int[] array, int size, int upper, int pointa)
