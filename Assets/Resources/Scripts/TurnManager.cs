@@ -24,7 +24,7 @@ public class TurnManager : MonoBehaviour {
         Time.timeScale = 6.0f;
         XRange = 64;
         YRange = 4;
-        Number = 4;
+        Number = 5;
         RobotA = GameObject.Find("Robot").GetComponent<Robot>();
         BallContainer = GameObject.Find("BallContainer").transform;
 

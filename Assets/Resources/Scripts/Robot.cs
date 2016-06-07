@@ -123,6 +123,11 @@ public class Robot : MonoBehaviour
         //    Debug.Log(SolutionList[2][i]);
         //}
     }
+    private void SemiNeighborSearch()
+    {
+
+
+    }
 
     private void FullSearch()
     {
@@ -131,11 +136,23 @@ public class Robot : MonoBehaviour
         int[] ballArray = new int[n + 1];
 
         int orderb = (int)Mathf.Pow(n, n);
+        int orderd = (int)Mathf.Pow(4, n);
+
         // Calculate all order.
         for (int k = 0; k < orderb; k++)
         {
-            directionSearch(n, ballArray, dirArray);
+            
+            // Calculate all direction.
+            for (int j = 0; j < orderd; j++)
+            {
+                singleSearch(n, ballArray, dirArray);
 
+                FullSearchList = InitializeTwoDList(FullSearchList);
+                dirArray[0]++;
+                dirArray = carryCheck(dirArray, n, 4, 0);
+            }
+            dirArray = ClearArray(dirArray);
+            // Direction loop end.
             //if (Mathf.RoundToInt((k / Mathf.Pow(n, n)) * 100)%10 == 0)
             //{
             //    Debug.Log(Mathf.RoundToInt((k / Mathf.Pow(n, n)) * 100) + "%...");
@@ -146,23 +163,7 @@ public class Robot : MonoBehaviour
         // Order loop end.
 
     }
-    private void directionSearch(int n, int[] barray, int[] darray)
-    {
-        int orderd = (int)Mathf.Pow(4, n);
 
-        // Calculate all direction.
-        for (int j = 0; j < orderd; j++)
-        {
-            singleSearch(n, barray, darray);
-
-            FullSearchList = InitializeTwoDList(FullSearchList);
-            darray[0]++;
-            darray = carryCheck(darray, n, 4, 0);
-        }
-        darray = ClearArray(darray);
-        // Direction loop end.
-
-    }
     private void singleSearch(int n, int[] barray, int[] darray)
     {
         bool endflag = false;
