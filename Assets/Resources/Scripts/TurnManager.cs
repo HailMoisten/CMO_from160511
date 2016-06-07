@@ -21,10 +21,10 @@ public class TurnManager : MonoBehaviour {
 
     public void Awake()
     {
-        Time.timeScale = 4.0f;
+        Time.timeScale = 6.0f;
         XRange = 64;
         YRange = 4;
-        Number = 16;
+        Number = 8;
         RobotA = GameObject.Find("Robot").GetComponent<Robot>();
         BallContainer = GameObject.Find("BallContainer").transform;
 
@@ -74,14 +74,20 @@ public class TurnManager : MonoBehaviour {
 
     public void NextTurn()
     {
-        float[] ab = RobotA.getNextMoveTime(turn);
-        RobotA.Move(RobotA.getNextRPos(turn), ab[0], ab[1]);
+        if (turn == 0) { turn++; }
 
-        for (int i = 0; i < BallList.Count; i++)
+        if (turn >= RobotA.getCount()) { }
+        else
         {
-            BallList[i].Move(ab[0], ab[1]);
+            float[] ab = RobotA.getNextMoveTime(turn);
+            StartCoroutine(RobotA.Move(RobotA.getNextRPos(turn), ab[0], ab[1], RobotA.getNextDir(turn)));
+
+            for (int i = 0; i < BallList.Count; i++)
+            {
+                BallList[i].Move(ab[0], ab[1]);
+            }
+            turn++;
         }
-        turn++;
     }
 
 }

@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Robot : MonoBehaviour {
+public class Robot : MonoBehaviour
+{
     private TurnManager turnManager;
     private List<List<float>> SolutionList = new List<List<float>>();
     private List<List<float>> FullSearchList = new List<List<float>>();
@@ -41,64 +42,101 @@ public class Robot : MonoBehaviour {
         return array;
     }
 
-    public void Move(Vector3 nextpos, float a, float b)
+    public IEnumerator Move(Vector3 nextpos, float a, float b, float dir)
     {
-        float t = a + (b * Mathf.Sqrt (2));
+        int d = Mathf.RoundToInt(dir);
+        float t = 0.0f;
+        switch (d)
+        {
+            case 0: break;
+            case 1:
+                t = Mathf.Sqrt(2) * TurnManager.YRange;
+                if (nextPosition.y < nextpos.y) { nextPosition = nextPosition + ((Vector3.right + Vector3.up) * TurnManager.YRange); }
+                else { nextPosition = nextPosition + ((Vector3.right + Vector3.down) * TurnManager.YRange); }
+                break;
+            case 2:
+                t = 1 * TurnManager.YRange;
+                if (nextPosition.y < nextpos.y) { nextPosition = nextPosition + (Vector3.up * TurnManager.YRange); }
+                else { nextPosition = nextPosition + (Vector3.down * TurnManager.YRange); }
+                break;
+            case 3:
+                t = Mathf.Sqrt(2) * TurnManager.YRange;
+                if (nextPosition.y < nextpos.y) { nextPosition = nextPosition + ((Vector3.left + Vector3.up) * TurnManager.YRange); }
+                else { nextPosition = nextPosition + ((Vector3.left + Vector3.down) * TurnManager.YRange); }
+                break;
+            default: break;
+        }
+
+        iTween.MoveTo(this.gameObject, iTween.Hash(
+            "position", nextPosition,
+            "time", t,
+            "easetype", "linear"
+        ));
+        yield return new WaitForSeconds(t);
+
+        t = a + (b * Mathf.Sqrt(2)) - t;
         nextPosition = nextpos;
         iTween.MoveTo(this.gameObject, iTween.Hash(
             "position", nextPosition,
             "time", t,
             "easetype", "linear"
         ));
-        EndFix(a, b);
-    }
 
-    private IEnumerator EndFix(float a, float b){
-        float time = a + (b * Mathf.Sqrt (2));
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(t);
         transform.position = nextPosition;
+
     }
 
     public float[] getNextMoveTime(int i)
     {
-        float[] ab = {SolutionList[2][i], 0};
+        float[] ab = new float[2];
+        if (i == 0) { ab[0] = SolutionList[2][i]; }
+        else { ab[0] = SolutionList[2][i] - SolutionList[2][i - 1]; }
         return ab;
+    }
+    public float getNextDir(int i)
+    {
+        return SolutionList[1][i];
     }
     public Vector3 getNextRPos(int i)
     {
         return new Vector3(SolutionList[3][i], SolutionList[4][i], 0);
     }
+    public int getCount()
+    {
+        return SolutionList[0].Count;
+    }
 
-    public void Calculate ()
+    public void Calculate()
     {
         Initialize();
         FullSearch();
-        Debug.Log("Count: " + SolutionList[0].Count);
-        Debug.Log("order id");
-        for (int i = 0; i < SolutionList[0].Count; i++)
-        {
-            Debug.Log(SolutionList[0][i]);
-        }
-        Debug.Log("each time");
-        for (int i = 0; i < SolutionList[2].Count; i++)
-        {
-            Debug.Log(SolutionList[2][i]);
-        }
+        Debug.Log("Count: " + (SolutionList[0].Count - 1));
+        //Debug.Log("order");
+        //for (int i = 0; i < SolutionList[0].Count; i++)
+        //{
+        //    Debug.Log(SolutionList[0][i]);
+        //}
+        //Debug.Log("each time");
+        //for (int i = 0; i < SolutionList[2].Count; i++)
+        //{
+        //    Debug.Log(SolutionList[2][i]);
+        //}
     }
 
     private void FullSearch()
     {
         int n = TurnManager.BallList.Count;
-        int[] dirArray = new int[n];
-        int[] ballArray = new int[n];
+        int[] dirArray = new int[n + 1];
+        int[] ballArray = new int[n + 1];
 
         bool endflag = false;
 
         // Calculate all order.
-        for (int k = 0; k < n * n; k++)
+        for (int k = 0; k < Mathf.Pow(n, n); k++)
         {
             // Calculate all direction.
-            for (int j = 0; j < n * 4; j++)
+            for (int j = 0; j < Mathf.Pow(4, n); j++)
             {
                 // One search loop.
                 for (int i = 0; i < n; i++)
@@ -136,6 +174,10 @@ public class Robot : MonoBehaviour {
             dirArray = ClearArray(dirArray);
             // Direction loop end.
 
+            //if (Mathf.RoundToInt((k / Mathf.Pow(n, n)) * 100)%10 == 0)
+            //{
+            //    Debug.Log(Mathf.RoundToInt((k / Mathf.Pow(n, n)) * 100) + "%...");
+            //}
             ballArray[0]++;
             ballArray = carryCheck(ballArray, n, n, 0);
         }
@@ -147,7 +189,7 @@ public class Robot : MonoBehaviour {
     {
         if (array[pointa] >= upper)
         {
-            array[pointa] -= upper;
+            array[pointa] = 0;
             pointa++;
             array[pointa]++;
             return carryCheck(array, size, upper, pointa);
@@ -195,11 +237,11 @@ public class Robot : MonoBehaviour {
             case 2:
                 if (rpos.y != bpos.y)
                 {
-                    if (b.velocity.x > 0 && (rpos.x - bpos.x) >= TurnManager.YRange * 1)
+                    if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * 1)
                     {
                         cancatch = true;
                     }
-                    else if (b.velocity.x < 0 && (rpos.x - bpos.x) <= TurnManager.YRange * 1)
+                    else if (b.velocity.x < 0 && rpos.x - bpos.x <= -1 * TurnManager.YRange * 1)
                     {
                         cancatch = true;
                     }
@@ -208,17 +250,17 @@ public class Robot : MonoBehaviour {
             case 3:
                 if (rpos.y != bpos.y)
                 {
-                    if (b.velocity.x < 0 && bpos.x - rpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) - 1))
+                    if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) + 1))
                     {
                         cancatch = true;
                     }
-                    else if (b.velocity.x > 0 && rpos.x - bpos.x >= TurnManager.YRange * (Mathf.Sqrt(2) + 1))
+                    else if (b.velocity.x < 0 && rpos.x - bpos.x <= -1 * TurnManager.YRange * (Mathf.Sqrt(2) - 1))
                     {
                         cancatch = true;
                     }
                 }
                 break;
-            default :
+            default:
                 break;
         }
 
@@ -310,11 +352,11 @@ public class Robot : MonoBehaviour {
             SolutionList.Add(calclist[2]);
             SolutionList.Add(calclist[3]);
             SolutionList.Add(calclist[4]);
-            Debug.Log("time: ");
-            for (int i = 0; i < SolutionList[2].Count; i++)
-            {
-                Debug.Log(SolutionList[2][i]);
-            }
+            //Debug.Log("time: ");
+            //for (int i = 0; i < SolutionList[2].Count; i++)
+            //{
+            //    Debug.Log(SolutionList[2][i]);
+            //}
         }
     }
 
@@ -405,7 +447,7 @@ public class Robot : MonoBehaviour {
                         }
                     }
                     break;
-                default :
+                default:
                     break;
             }
 
@@ -413,7 +455,7 @@ public class Robot : MonoBehaviour {
             {
                 switch (dir)
                 {
-                    case 0: 
+                    case 0:
                         break;
                     case 1:
                         usedtime = TurnManager.YRange * (Mathf.Sqrt(2));
@@ -451,7 +493,7 @@ public class Robot : MonoBehaviour {
                             rpos = rpos + ((Vector3.left + Vector3.down) * TurnManager.YRange);
                         }
                         break;
-                    default :
+                    default:
                         break;
                 }
                 usedtime = usedtime + (Mathf.Abs(rpos.x - bpos.x) / 2);
