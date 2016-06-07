@@ -131,7 +131,6 @@ public class Robot : MonoBehaviour
         int[] ballArray = new int[n + 1];
 
         int orderb = (int)Mathf.Pow(n, n);
-
         // Calculate all order.
         for (int k = 0; k < orderb; k++)
         {
@@ -171,12 +170,12 @@ public class Robot : MonoBehaviour
         // One search loop.
         for (int i = 0; i < n; i++)
         {
-            if (endflag) { }
+            if (endflag) { continue; }
             else
             {
                 if (FullSearchList[0].Contains(barray[i]))
                 {
-                    endflag = true;
+                    endflag = true; continue;
                 }
                 else
                 {
@@ -189,7 +188,7 @@ public class Robot : MonoBehaviour
                             darray[i],
                             FullSearchList);
                     }
-                    else { endflag = true; }
+                    else { endflag = true; continue; }
                 }
             }
         }
