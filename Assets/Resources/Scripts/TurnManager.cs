@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 public class TurnManager : MonoBehaviour {
     public static List<Ball> BallList = new List<Ball>();
+
     public static Robot RobotA;
+
     public static Transform BallContainer;
     public static int XRange;
     public void SetXRange(string str) { XRange = int.Parse(str); }
