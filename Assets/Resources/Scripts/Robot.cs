@@ -112,18 +112,16 @@ public class Robot : MonoBehaviour
         Initialize();
 
 
-
-        //FullSearch();
         //Debug.Log("Count: " + (AlgsSolutionList[0].Count - 1));
         //Debug.Log("order");
-        //for (int i = 0; i < SolutionList[0].Count; i++)
+        //for (int i = 0; i < AlgsSolutionList[0].Count; i++)
         //{
-        //    Debug.Log(SolutionList[0][i]);
+        //    Debug.Log(AlgsSolutionList[0][i]);
         //}
         //Debug.Log("each time");
-        //for (int i = 0; i < SolutionList[2].Count; i++)
+        //for (int i = 0; i < AlgsSolutionList[2].Count; i++)
         //{
-        //    Debug.Log(SolutionList[2][i]);
+        //    Debug.Log(AlgsSolutionList[2][i]);
         //}
     }
     private void SemiNeighborSearch()
